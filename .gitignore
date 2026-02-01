@@ -1,0 +1,18 @@
+# ============ STM32CubeIDE ============
+**/Debug/
+**/Release/
+**/.build/
+**/.settings/
+**/*.launch
+**/.metadata/
+
+# ============ Binaires ============
+**/*.o
+**/*.elf
+**/*.map
+**/*.hex
+**/*.bin
+
+# ============ OS ============
+.DS_Store
+Thumbs.db
