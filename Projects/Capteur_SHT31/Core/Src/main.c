@@ -24,7 +24,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "lcd.h"
+#include "sht31.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -45,7 +46,9 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+rgb_lcd lcd;
+float temp, hum;
+char lcd_line[20];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -91,17 +94,74 @@ int main(void)
   MX_USART2_UART_Init();
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
+  lcd_init(&hi2c1, &lcd);      // init LCD
+
+  HAL_StatusTypeDef lcd_status;
+  HAL_StatusTypeDef sht31_status;
+
+  lcd_status = HAL_I2C_IsDeviceReady(&hi2c1, LCD_ADDRESS, 5, 100);
+  sht31_status = HAL_I2C_IsDeviceReady(&hi2c1, SHT31_ADDR, 5, 100);
+
+  int hum_i, temp_i;
+  lcd_init(&hi2c1, &lcd);
+
+  if (sht31_status == HAL_OK)
+  {
+      lcd_position(&hi2c1, 0, 0);
+      lcd_print(&hi2c1, "Capteur OK");
+      reglagecouleur(255,1,1);
+      HAL_Delay(2000);
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
-  {
+      while (1)
+      {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-  }
+
+	      if (SHT31_Read(&temp, &hum) == HAL_OK)
+	          {
+	              // conversion simple
+	              temp_i = (int)(temp * 10);   // ex: 23.4 -> 234
+	              hum_i  = (int)(hum * 10);    // ex: 56.7 -> 567
+
+	              clearlcd();
+
+	              // Ligne 1 : Temperature
+	              lcd_position(&hi2c1, 0, 0);
+	              lcd_print(&hi2c1, "T:");
+	              lcd_write(&hi2c1, (temp_i / 100) + '0');
+	              lcd_write(&hi2c1, ((temp_i / 10) % 10) + '0');
+	              lcd_print(&hi2c1, ".");
+	              lcd_write(&hi2c1, (temp_i % 10) + '0');
+	              lcd_print(&hi2c1, " C");
+
+	              // Ligne 2 : Humidite
+	              lcd_position(&hi2c1, 0, 1);
+	              lcd_print(&hi2c1, "H:");
+	              lcd_write(&hi2c1, (hum_i / 100) + '0');
+	              lcd_write(&hi2c1, ((hum_i / 10) % 10) + '0');
+	              lcd_print(&hi2c1, ".");
+	              lcd_write(&hi2c1, (hum_i % 10) + '0');
+	              lcd_print(&hi2c1, " %");
+
+	              HAL_Delay(600);
+
+	          }
+	          else
+	          {
+	              clearlcd();
+	              lcd_position(&hi2c1, 0, 0);
+	              lcd_print(&hi2c1, "SHT31 ERROR");
+	          }
+	      }
+
+
+}
+
   /* USER CODE END 3 */
 }
 
