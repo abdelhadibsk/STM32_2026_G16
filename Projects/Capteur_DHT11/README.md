@@ -97,6 +97,4 @@ void clearlcd(void);
 - Open with STM32CubeIDE
 - Build & Flash
 
-## Report
-See detailed report in docs/reports/.
 

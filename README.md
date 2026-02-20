@@ -30,11 +30,13 @@ Tous les projets sont réalisés sur **STM32 Nucleo-L476RG**, en utilisant **STM
 
 STM32L476RG_BEprojects/
 ├── Projects/
-│   ├──
-│   ├──
-│   ├──
-│   ├──
-│   ├──
+│   ├── Projet1_BE
+│   ├── Projet2_BE
+│   ├── Projet3_BE
+│   ├── Projet_LCD
+│   ├── Capteur DHT11
+│   ├── Capteur SHT31
+│   ├── BE (ruche) HX711
 ├── Documents/
 │   ├── datasheets/
 │   ├── reports/

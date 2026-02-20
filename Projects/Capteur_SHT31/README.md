@@ -53,6 +53,4 @@ HAL_StatusTypeDef SHT31_Read(float *temperature, float *humidity)
 - Les valeurs de température et d’humidité s’affichent sur le LCD
 - En cas d’erreur capteur, un message s’affiche à l’écran
 
-## Report
-See detailed report in docs/reports/.
 
