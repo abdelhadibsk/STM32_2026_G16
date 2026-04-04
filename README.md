@@ -8,11 +8,45 @@ Tous les projets sont réalisés sur **STM32 Nucleo-L476RG**, en utilisant **STM
 ---
 
 ## 🎯 Objectifs du dépôt
-- Apprendre et pratiquer la programmation embarquée STM32
-- Comprendre l’utilisation des périphériques (GPIO, TIM, EXTI, I2C, UART…)
-- Implémenter des protocoles de communication (I2C, One-Wire)
-- Structurer des projets embarqués propres et réutilisables
-- Constituer un **portfolio technique** pour stages et projets
+- Apprendre et pratiquer la programmation embarquée STM32  
+- Comprendre l’utilisation des périphériques (GPIO, TIM, EXTI, I2C, UART…)  
+- Implémenter des protocoles de communication (I2C, One-Wire)  
+- Structurer des projets embarqués propres, documentés et réutilisables  
+
+---
+
+## 📁 Contenu du dépôt
+
+Ce dépôt regroupe plusieurs projets embarqués réalisés autour de la plateforme STM32.
+
+### 📄 README (par projet)
+Chaque projet contient un fichier README détaillé qui décrit :
+- le fonctionnement du système  
+- l’architecture du code  
+- les étapes d’exécution  
+- le câblage matériel  
+
+➡️ En suivant ces README, il est possible de **comprendre rapidement le code** et de **reproduire les projets** de manière autonome.
+
+---
+
+### 📑 Rapports
+Des rapports détaillés accompagnent les projets et présentent :
+- les choix techniques réalisés  
+- les solutions mises en œuvre  
+- les aspects matériels (capteurs, modules, architecture)  
+- les protocoles de communication utilisés  
+
+---
+
+## 🔗 Complémentarité README / Rapports
+
+Les README et les rapports sont **complémentaires** :
+
+- **README** → compréhension du code, mise en œuvre pratique, reproduction  
+- **Rapports** → vision globale, justification des choix, aspects théoriques et matériels  
+
+➡️ Pour chaque projet, il est recommandé de **consulter à la fois le README et le rapport associé** afin d’avoir une compréhension complète.
 
 ---
 
@@ -39,8 +73,9 @@ STM32L476RG_BEprojects/
 │   ├── BE (ruche) HX711
 ├── Documents/
 │   ├── datasheets/
-│   ├── reports/
-│   └── diagrams/
+│   ├── Signaux_communication/
+│   └── Schémas de cablage/
+│   └── Rapports/
 └── README.md
 ```
 
@@ -84,3 +119,11 @@ STM32L476RG_BEprojects/
 - Affichage LCD I2C
 
 
+### 🔹 7. La ruche – HX711 + LoRa + LCD
+
+- Mesure de poids via cellule de charge (HX711 – ADC 24 bits)
+- Calibration (offset + facteur d’échelle)
+- Affichage du poids sur écran LCD I2C
+- Transmission sans fil des données via LoRa (UART – commandes AT)
+- Envoi périodique du poids (toutes les 2 secondes)
+- Possibilité de réception côté distant et affichage du poids
