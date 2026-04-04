@@ -1,20 +1,23 @@
 /* USER CODE BEGIN Header */
+
 /**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2026 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file : main.c
+ * @brief : Main program body
+
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2026 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *****************************************************************************
+ */
+
+
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
@@ -26,15 +29,22 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
+
+
+
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
 
+
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+
+#include "lora.h"
 #include "lcd.h"
 #include "hx711.h"
 #include <stdio.h>
@@ -47,11 +57,10 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-
 /* USER CODE BEGIN PV */
-rgb_lcd lcd;
-//uint8_t temp, hum;
 
+
+rgb_lcd lcd;
 
 /* USER CODE END PV */
 
@@ -83,12 +92,14 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
+
   /* USER CODE END Init */
 
   /* Configure the system clock */
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
+
 
   /* USER CODE END SysInit */
 
@@ -98,52 +109,112 @@ int main(void)
   MX_TIM6_Init();
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
-  HAL_TIM_Base_Start(&htim6);
-  lcd_init(&hi2c1, &lcd);      // init LCD
 
-  char lcd_buffer[16];
 
-  HX711_HandleTypeDef hx;
+HAL_TIM_Base_Start(&htim6);
+lcd_init(&hi2c1, &lcd); // init LCD
 
-  hx.dt_port = GPIOA;
-  hx.dt_pin = GPIO_PIN_0;
-  hx.sck_port = GPIOA;
-  hx.sck_pin = GPIO_PIN_1;
+char lcd_buffer[16];
 
-  lcd_init(&hi2c1, &lcd);      // init LCD
-  lcd_position(&hi2c1, 0, 0);
-  lcd_print(&hi2c1, "START");
-  reglagecouleur(255,255,255);
-  HX711_Init(&hx);
-  HAL_Delay(2000);
+HX711_HandleTypeDef hx;
 
-  float poids = 0;
+
+
+hx.dt_port = GPIOA;
+hx.dt_pin = GPIO_PIN_0;
+hx.sck_port = GPIOA;
+hx.sck_pin = GPIO_PIN_1;
+
+
+
+
+
+lcd_init(&hi2c1, &lcd); // init LCD
+lcd_position(&hi2c1, 0, 0);
+lcd_print(&hi2c1, "START");
+reglagecouleur(255,255,255);
+HX711_Init(&hx);
+Lora_Init();
+HAL_Delay(2000);
+
+
+float poids = 0;
+long value = 0;
+float received = 0;
+
+
+hx.offset = 498700 + 500; // vaut zero avant calibration
+hx.scale = 224630.0f; // vaut 1 avant calibration
+Lora_SendCommand("AT+TEST=RXLRPKT\r\n");
+
 
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
-  {
-    /* USER CODE END WHILE */
 
+
+while (1)
+{
+
+    /* USER CODE END WHILE */
     /* USER CODE BEGIN 3 */
 
-	 poids = HX711_GetWeight(&hx);
-	 //lcd_print(&hi2c1, "S");
-	 sprintf(lcd_buffer, "%.2f g", poids);
-	 clearlcd();
-	 lcd_position(&hi2c1, 0, 0);
-	 lcd_print(&hi2c1, "Poids:");
 
-	 lcd_position(&hi2c1, 0, 1);
-	 lcd_print(&hi2c1, lcd_buffer);
+	while (HAL_GPIO_ReadPin(hx.dt_port, hx.dt_pin));
 
-	 HAL_Delay(1000);
+	for(int i = 0; i < 24; i++)
+		{
+		delay_us(1);
+	    HAL_GPIO_WritePin(hx.sck_port, hx.sck_pin, GPIO_PIN_SET);
+	    value = value << 1;
+	    //HAL_Delay(500);
+	    delay_us(1);
+
+	    HAL_GPIO_WritePin(hx.sck_port, hx.sck_pin, GPIO_PIN_RESET);
+	    //HAL_Delay(500);
+	    //delay_us(10);
+	    if(HAL_GPIO_ReadPin(hx.dt_port, hx.dt_pin))
+
+	    value++;
+
+		 }
+			delay_us(1);
+		    HAL_GPIO_WritePin(hx.sck_port, hx.sck_pin, GPIO_PIN_SET);
+		    delay_us(1);
+
+		    HAL_GPIO_WritePin(hx.sck_port, hx.sck_pin, GPIO_PIN_RESET);
+
+		    poids = (value - hx.offset) / hx.scale;
 
 
-  }
+		    sprintf(lcd_buffer, "%.3f Kg", poids);
+		    clearlcd();
+
+		    lcd_position(&hi2c1, 0, 0);
+		    lcd_print(&hi2c1, "Poids:");
+
+		    lcd_position(&hi2c1, 0, 1);
+		    lcd_print(&hi2c1, lcd_buffer);
+
+		    Lora_SendFloat(poids);
+		    HAL_Delay(2000);	// envoie chaque 2 seconds
+
+		    /*	code à mettre dans le microcontroleur responsable à la reception lora
+		      	received = Lora_ReceiveFloat();
+
+		    	sprintf(lcd_buffer, "%.3f Kg", received);
+    		    clearlcd();
+    			lcd_position(&hi2c1, 0, 0);
+    			lcd_print(&hi2c1, "Poids:");
+
+    			lcd_position(&hi2c1, 0, 1);
+    			lcd_print(&hi2c1, lcd_buffer);
+		     */
+}
+
+
   /* USER CODE END 3 */
 }
 
@@ -197,6 +268,7 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+
 
 /* USER CODE END 4 */
 

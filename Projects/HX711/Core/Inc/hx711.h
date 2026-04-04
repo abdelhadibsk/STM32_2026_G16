@@ -5,18 +5,23 @@
 
 extern TIM_HandleTypeDef htim6;
 
+
 typedef struct {
-    GPIO_TypeDef* dt_port;
-    uint16_t dt_pin;
-    GPIO_TypeDef* sck_port;
-    uint16_t sck_pin;
-    long offset;
-    float scale;
+
+	GPIO_TypeDef* dt_port;
+	uint16_t dt_pin;
+	GPIO_TypeDef* sck_port;
+	uint16_t sck_pin;
+	long offset;
+	float scale;
+
 } HX711_HandleTypeDef;
 
-static void delay_us(uint16_t us);
+
+void delay_us(uint16_t us);
 void HX711_Init(HX711_HandleTypeDef *hx);
 long HX711_ReadRaw(HX711_HandleTypeDef *hx);
 float HX711_GetWeight(HX711_HandleTypeDef *hx);
+
 
 #endif
