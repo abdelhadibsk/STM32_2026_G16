@@ -30,12 +30,14 @@ Chaque projet contient un fichier README détaillé qui décrit :
 
 ---
 
-### 📑 Rapports
-Des rapports détaillés accompagnent les projets et présentent :
+### 📑 Rapports & Présentations
+Des rapports détaillés et supports de présentation accompagnent les projets et présentent :
 - les choix techniques réalisés  
 - les solutions mises en œuvre  
 - les aspects matériels (capteurs, modules, architecture)  
 - les protocoles de communication utilisés  
+
+📊 Des **slides de présentation** sont également disponibles, notamment pour le projet de **ruche connectée**, permettant une vue synthétique du système et de son fonctionnement.
 
 ---
 
@@ -76,6 +78,7 @@ STM32L476RG_BEprojects/
 │   ├── Signaux_communication/
 │   └── Schémas de cablage/
 │   └── Rapports/
+│   └── Slides_Presentation/
 └── README.md
 ```
 
